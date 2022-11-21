@@ -1,0 +1,363 @@
+<?php
+error_reporting(0);
+
+// putenv("GMT");
+// putenv("TZ=America/Los_Angeles");
+
+if (!isset($_POST['zone'])) {
+	putenv("TZ=US/Pacific");
+	date_default_timezone_set('America/Los_Angeles');
+	} else {
+	putenv("TZ=".$_POST["zone"]."");
+	date_default_timezone_set("".$_POST["zone"]."");
+	}
+
+if (@$_POST['start'] == "") {
+	$start = strtotime("Today");
+	} else {
+	$start = strtotime($_POST["start"]);
+	}
+
+if (@$_POST['end'] == "") {
+	$end = $start + 31449600;
+	} else {
+	$end = strtotime($_POST["end"]);
+	}
+
+if (@$_POST['rise_off'] == "") {
+	$rise_off = "0";
+	} else {
+	$rise_off = $_POST["rise_off"]*60;
+	}
+
+if (@$_POST['set_off'] == "") {
+	$set_off = "0";
+	} else {
+	$set_off = $_POST["set_off"]*60;
+	}
+
+if (@$_POST['lat'] == "") {
+	$lat = 45.58753958079636;
+	} else {
+	$lat = $_POST["lat"];
+	}
+
+if (@$_POST['lon'] == "") {
+	$lon = -122.58886098861694;
+	} else {
+	$lon = $_POST["lon"];
+	}
+
+if (@$_POST['twelve'] == "") {
+	$twelve = "";
+	} else {
+	$twelve = "yes";
+	}
+
+if (@$_POST['description'] == "") {
+	$description = "";
+	} else {
+	$description = str_replace(array("\r\n", "\r", "\n"), "", stripslashes($_POST["description"]));
+	}
+
+if (isset($_POST["submit"])) {
+	//header("Content-type: text/plain");
+	header('Content-Type: text/calendar; charset=utf-8');
+	header('Content-Disposition: attachment; filename="ical_sun.ics"');
+
+echo "BEGIN:VCALENDAR
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+PRODID:-//Apple Computer\, Inc//iCal 1.0//EN
+X-WR-CALNAME;VALUE=TEXT:Sunrise and/or Sunset Times for $lat,$lon
+VERSION:2.0\n";
+	$i = 0;
+	$day = $start;
+	while ($day <= $end ) {
+	if ($i <= 365) {
+if (isset($_POST['sunrise'])) {
+			echo "BEGIN:VEVENT\n";
+			$sunrise =  date_sun_info($day, $lat, $lon);
+			$real_sunrise = date("His",$sunrise[sunrise]);
+			$offset_sunrise = date("His",$sunrise[sunrise]+$rise_off);
+			$rise_day = date("Ymd", $day);
+			if ($twelve == "yes") {
+			$real_sunrise = date("his",$sunrise[sunrise]);
+			echo "UID:$rise_day"."T"."$offset_sunrise\nSUMMARY:Sunrise : ".substr($real_sunrise,0,2).":".substr($real_sunrise,2,2)." AM\nDTEND:$rise_day"."T"."$offset_sunrise
+DTSTAMP:$rise_day"."T"."$offset_sunrise\nSUMMARY:Sunrise : ".substr($real_sunrise,0,2).":".substr($real_sunrise,2,2)." AM\nDTEND:$rise_day"."T"."$offset_sunrise
+DTSTART:$rise_day"."T"."$offset_sunrise\nSUMMARY:Sunrise : ".substr($real_sunrise,0,2).":".substr($real_sunrise,2,2)." AM\nDTEND:$rise_day"."T"."$offset_sunrise
+DESCRIPTION:$description
+URL:http://pdxvr.com/ical_sun.php
+END:VEVENT\n";
+			} else {
+			echo "UID:$rise_day"."T"."$offset_sunrise\nSUMMARY:Sunrise : ".substr($real_sunrise,0,2).":".substr($real_sunrise,2,2)."\nDTEND:$rise_day"."T"."$offset_sunrise
+DTSTAMP:$rise_day"."T"."$offset_sunrise\nSUMMARY:Sunrise : ".substr($real_sunrise,0,2).":".substr($real_sunrise,2,2)."\nDTEND:$rise_day"."T"."$offset_sunrise
+DTSTART:$rise_day"."T"."$offset_sunrise\nSUMMARY:Sunrise : ".substr($real_sunrise,0,2).":".substr($real_sunrise,2,2)."\nDTEND:$rise_day"."T"."$offset_sunrise
+DESCRIPTION:$description
+URL:http://pdxvr.com/ical_sun.php
+END:VEVENT\n";
+			}
+}
+if (isset($_POST['sunset'])) {
+			echo "BEGIN:VEVENT\n";
+			$sunset =  date_sun_info($day, $lat, $lon);
+			$real_sunset = date("His",$sunset[sunset]);
+			$offset_sunset = date("His",$sunset[sunset]+$set_off);
+			$set_day = date("Ymd", $day);
+			if ($twelve == "yes") {
+			$real_sunset = date("his",$sunset[sunset]);
+			echo "UID:$set_day"."T"."$offset_sunset\nSUMMARY:Sunset : ".substr($real_sunset,0,2).":".substr($real_sunset,2,2)." PM\nDTEND:$set_day"."T"."$offset_sunset
+DTSTAMP:$set_day"."T"."$offset_sunset\nSUMMARY:Sunset : ".substr($real_sunset,0,2).":".substr($real_sunset,2,2)." PM\nDTEND:$set_day"."T"."$offset_sunset
+DTSTART:$set_day"."T"."$offset_sunset\nSUMMARY:Sunset : ".substr($real_sunset,0,2).":".substr($real_sunset,2,2)." PM\nDTEND:$set_day"."T"."$offset_sunset			
+DESCRIPTION:$description
+URL:http://pdxvr.com/ical_sun.php
+END:VEVENT\n";
+			} else {
+			echo "UID:$set_day"."T"."$offset_sunset\nSUMMARY:Sunset : ".substr($real_sunset,0,2).":".substr($real_sunset,2,2)."\nDTEND:$set_day"."T"."$offset_sunset
+DTSTAMP:$set_day"."T"."$offset_sunset\nSUMMARY:Sunset : ".substr($real_sunset,0,2).":".substr($real_sunset,2,2)."\nDTEND:$set_day"."T"."$offset_sunset
+DTSTART:$set_day"."T"."$offset_sunset\nSUMMARY:Sunset : ".substr($real_sunset,0,2).":".substr($real_sunset,2,2)."\nDTEND:$set_day"."T"."$offset_sunset
+DESCRIPTION:$description
+URL:http://pdxvr.com/ical_sun.php
+END:VEVENT\n";
+			}
+}
+
+	$day = mktime(0,0,0,date("m", $day),date("d", $day)+1,date("Y", $day));
+	}
+	$i++;
+
+	}
+echo "END:VCALENDAR";
+
+} else {
+
+putenv("TZ-America/Los_Angeles");
+$sunrise =  date_sun_info(strtotime("Today"), $lat, $lon);
+$sunset =  date_sun_info(strtotime("Today"), $lat, $lon);
+$sunrise[sunrise];
+$sunset[sunset];
+
+echo "<!doctype html>
+<html lang=\"en\">
+<head>
+<meta charset=\"utf-8\">
+<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0\"><title>Free Online iCal Sunrise and Sunset Calendar Generator</title>
+<style>
+body {
+	font-size: 16px;
+	font-family: Courier new, Courier, monospace;
+	font-weight: bold;
+}
+
+input, select, textarea {
+	font-size: 20px;
+	font-family: Courier new, Courier, monospace;
+	font-weight: bold;
+	padding: 8px;
+	margin: 5px 0;
+}
+input[type=checkbox] {
+	transform: scale(2);
+}
+.check {
+	border: 1px solid #ccc;
+	margin-left: 10px;
+}
+input[type=submit] {
+	-webkit-appearance: none;
+	border-radius: 5px;
+	font-size: 22px;
+}
+button {
+	-webkit-appearance: none;
+	border-radius: 5px;
+	font-size: 22px;
+	padding: 20px;
+	font-family: Courier new, Courier, monospace;
+	font-weight: bold;
+}
+
+.select {
+	border-radius: 5px;
+}
+
+.cboxl {
+
+}
+.cboxr {
+margin: -21px 0 0 30px;
+}
+
+
+@media screen and (max-width:1400px) {
+	body {
+		font-size: 22px;
+		max-width: 100%;
+	}
+
+	input, select, textarea {
+	font-size: 22px;
+	font-family: Courier;
+	font-weight: bold;
+	padding: 20px;
+	margin: 5px 0;
+	width: 100%;
+}
+	input[type=checkbox] {
+		transform: scale(.7);
+		width: 20px;
+}
+button {
+	-webkit-appearance: none;
+	border-radius: 5px;
+	font-size: 22px;
+	padding: 20px;
+	font-family: Courier new, Courier, monospace;
+	font-weight: bold;
+	width: 100%;
+}
+
+.check {
+	border: 1px solid #ccc;
+	margin-left: 0px;
+}
+
+.cboxr {
+margin: -40px 0 0 35px;
+}
+
+}
+</style>
+
+";
+?>
+</head>
+
+
+<?php
+echo "<body style=\"padding: 20px; margin: 0;\"><h1>Free Online iCal Sunrise and Sunset Calendar Generator</h1>
+
+<b>Local Information - Portland Oregon - Pacific Standard (US/Pacific)</b>
+<br>
+This script was last updated on ".date('d M, Y', getlastmod())."<br>
+Today&nbsp;&nbsp;&nbsp;-&nbsp;".date('d M Y', strtotime("Today"))."
+<br>
+Sunrise -&nbsp;".date('H:i', $sunrise[sunrise])."<br>
+Sunset&nbsp;&nbsp;-&nbsp;".date('H:i', $sunset[sunset])."
+<hr>";
+
+echo "<p>Use the form below to generate an iCal-formatted calendar for your location.<br>
+Use the 'offset' if you need to schedule an event (or notification) before or after the actual sunrise or sunset time - or whatever.<br>
+<br></p>
+<p style=\"color: red;\">NOTE: Before you import the ICS, please check it. It's a lot of hassle to remove a year of individual events.
+<br><br>
+You cannot subscribe to the calendar.  You must come back here annualy or generate multiple years of calendars at a time now.<p>
+<span style=\"color: red;\">*</span> = Required for accurate results, location defaults to Portland International Airport, Oregon, USA <a target=\"_blank\" style=\"text-decoration: none;\" href=\"https://maps.google.com/?q=45.58753,-122.58886\">(45.58753, -122.58886)</a>
+<br><br><br>
+
+
+<button onclick=\"getLocation()\">Get Geo Location</button>
+<p id=\"getGeo\">&nbsp;</p>
+<form method=\"post\">
+latitude (decimal i.e. 45.5555)<br><input type=\"text\" name=\"lat\" id=\"lat\" ><span style=\"color: red;\"> *</span>
+<br><hr><br>
+longitude (decimal - don't forget the minus sign if in the west)<br><input type=\"text\" name=\"lon\" id=\"lon\" ><span style=\"color: red;\"> *</span>
+<br><hr><br>
+start date (MM/DD/YYYY) defaults to today<br><input type=\"text\" name=\"start\" >
+<br><hr><br>
+end date (MM/DD/YYYY) defaults to one year from today (maximum 365 days)<br><input type=\"text\" name=\"end\" >
+<br><hr><br>
+sunrise offset in minutes (use \"+15\" or \"-15\" for example)<br><input type=\"text\" name=\"rise_off\" >
+<br><hr><br>
+sunset offset in minutes (use \"+15\" or \"-15)\" for example
+<br><input type=\"text\" name=\"set_off\" >
+<br><hr><br>
+<select class=\"select\" name=\"zone\">";
+$zone = timezone_identifiers_list();
+echo "<option>America/Los_Angeles</option>";
+foreach ($zone as $key => $value) {
+	echo "<option>$value</option>";
+}
+
+
+echo "
+</select><span style=\"color: red;\"> *</span>&nbsp;&nbsp;<b>important</b> - your timezone<br>
+<br><hr><br>
+
+<span style=\"color: red;\">check one or both of the boxes below</span>
+<br>
+<br>
+<div class=\"cboxl\"><input type=\"checkbox\" class=\"check\" name=\"sunrise\" id=\"sunrise\"></div><div class=\"cboxr\"><label for=\"sunrise\">&nbsp;generate sunrise times</label></div>
+<br>
+<br>
+<div class=\"cboxl\"><input type=\"checkbox\" class=\"check\" name=\"sunset\" id=\"sunset\"></div><div class=\"cboxr\"><label for=\"sunset\">&nbsp;generate sunset times</label></div>
+<br>
+<hr>
+<br>
+<div class=\"cboxl\"><input type=\"checkbox\" class=\"check\" name=\"twelve\" id=\"twelve\"></div><div class=\"cboxr\"><label for=\"twelve\">&nbsp;use 12 hour times (AM/PM)</label></div>
+<br>
+<br>
+
+<br>
+<!--
+<input type=\"checkbox\" name=\"dst\"/> check this to automatically remove the default US daylight savings time adjustment<br>
+-->
+
+Enter Description Here :
+<br>
+<textarea style=\"width: 100%; height: 200px;\" name=\"description\"></textarea><input type=\"submit\" name=\"submit\" style=\"padding: 20px; font-family: Courier new, Courier, monospace\" value=\"Submit\" >
+</form>
+
+";
+?>
+<script>alert("\nI disabled subscriptions.\n\nPlease download an ICS file as needed.");</script>
+<script>
+let myapp =  {
+  x: document.getElementById("getGeo"),
+  lat: document.getElementById("lat"),
+  lon: document.getElementById("lon"),
+};
+
+function getLocation() {
+  myapp.x.innerHTML = '&nbsp;';
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition, showError);
+  } else {
+    "Geolocation is not supported by this browser.";
+  }
+}
+
+function showPosition(position) {
+//  myapp.x.innerHTML = "Latitude: " + position.coords.latitude +
+//    "<br>Longitude: " + position.coords.longitude;
+  myapp.lat.value = Math.round(position.coords.latitude * 1000) / 1000;
+  myapp.lon.value = Math.round(position.coords.longitude * 1000) / 1000;
+  
+}
+
+function showError(error) {
+  myapp.lat.value = "";
+  myapp.lon.value = "";
+  myapp.x.innerHTML = "<br>Error message: " + error.message;
+}
+</script>
+
+<?php
+echo "
+
+<h2>NOTES</h2>
+<span style=\"line-height: 22px;\">
+I threw this together for very small personal use project in late 2009. I updated it for different versions of PHP, then in 2022 to add 12 hour time, accessibility fixes, location services, and updated the sunrise / sunset calculations. I only ever add to it and have never cleaned up the code - you get what you pay for.
+<br><br>
+DAYLIGHT SAVING TIME:<br>
+PHP appears to have DST built in but you must select the correct time zone. America/Phoenix, won't give you DST because Arizona doesn't do DST.
+<br><br>
+<strong>problems or questions</strong> - <a href=\"https://finch.red/contact\" target=\"_blank\">contact me</a> or <a href=\"https://paypal.me/crowdotblack?country.x=US&locale.x=en_US\" target=\"_blank\">buy me a coffee</a>
+</span><br>
+</body>
+</html>";
+// print_r(timezone_identifiers_list());
+// include("../inc/ga.php");
+}
+
+?>
