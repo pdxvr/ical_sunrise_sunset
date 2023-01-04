@@ -1,9 +1,8 @@
 <?php
 error_reporting(0);
 
-// putenv("GMT");
-// putenv("TZ=America/Los_Angeles");
-
+//putenv("GMT");
+//putenv("TZ=America/Los_Angeles");
 if (!isset($_POST['zone'])) {
 	putenv("TZ=US/Pacific");
 	date_default_timezone_set('America/Los_Angeles');
@@ -60,7 +59,7 @@ if (@$_POST['description'] == "") {
 	$description = str_replace(array("\r\n", "\r", "\n"), "", stripslashes($_POST["description"]));
 	}
 
-if (isset($_POST["submit"])) {
+if (isset($_POST["submit"])) {	
 	//header("Content-type: text/plain");
 	header('Content-Type: text/calendar; charset=utf-8');
 	header('Content-Disposition: attachment; filename="ical_sun.ics"');
@@ -83,16 +82,20 @@ if (isset($_POST['sunrise'])) {
 			$rise_day = date("Ymd", $day);
 			if ($twelve == "yes") {
 			$real_sunrise = date("his",$sunrise[sunrise]);
-			echo "UID:$rise_day"."T"."$offset_sunrise\nSUMMARY:Sunrise : ".substr($real_sunrise,0,2).":".substr($real_sunrise,2,2)." AM\nDTEND:$rise_day"."T"."$offset_sunrise
-DTSTAMP:$rise_day"."T"."$offset_sunrise\nSUMMARY:Sunrise : ".substr($real_sunrise,0,2).":".substr($real_sunrise,2,2)." AM\nDTEND:$rise_day"."T"."$offset_sunrise
-DTSTART:$rise_day"."T"."$offset_sunrise\nSUMMARY:Sunrise : ".substr($real_sunrise,0,2).":".substr($real_sunrise,2,2)." AM\nDTEND:$rise_day"."T"."$offset_sunrise
+			echo "UID:$rise_day"."T"."$offset_sunrise
+SUMMARY:Sunrise : ".substr($real_sunrise,0,2).":".substr($real_sunrise,2,2)." AM
+DTSTAMP:$rise_day"."T"."$offset_sunrise
+DTSTART:$rise_day"."T"."$offset_sunrise
+DTEND:$rise_day"."T"."$offset_sunrise
 DESCRIPTION:$description
 URL:http://pdxvr.com/ical_sun.php
 END:VEVENT\n";
 			} else {
-			echo "UID:$rise_day"."T"."$offset_sunrise\nSUMMARY:Sunrise : ".substr($real_sunrise,0,2).":".substr($real_sunrise,2,2)."\nDTEND:$rise_day"."T"."$offset_sunrise
-DTSTAMP:$rise_day"."T"."$offset_sunrise\nSUMMARY:Sunrise : ".substr($real_sunrise,0,2).":".substr($real_sunrise,2,2)."\nDTEND:$rise_day"."T"."$offset_sunrise
-DTSTART:$rise_day"."T"."$offset_sunrise\nSUMMARY:Sunrise : ".substr($real_sunrise,0,2).":".substr($real_sunrise,2,2)."\nDTEND:$rise_day"."T"."$offset_sunrise
+			echo "UID:$rise_day"."T"."$offset_sunrise
+SUMMARY:Sunrise : ".substr($real_sunrise,0,2).":".substr($real_sunrise,2,2)."
+DTSTAMP:$rise_day"."T"."$offset_sunrise
+DTSTART:$rise_day"."T"."$offset_sunrise
+DTEND:$rise_day"."T"."$offset_sunrise
 DESCRIPTION:$description
 URL:http://pdxvr.com/ical_sun.php
 END:VEVENT\n";
@@ -106,16 +109,20 @@ if (isset($_POST['sunset'])) {
 			$set_day = date("Ymd", $day);
 			if ($twelve == "yes") {
 			$real_sunset = date("his",$sunset[sunset]);
-			echo "UID:$set_day"."T"."$offset_sunset\nSUMMARY:Sunset : ".substr($real_sunset,0,2).":".substr($real_sunset,2,2)." PM\nDTEND:$set_day"."T"."$offset_sunset
-DTSTAMP:$set_day"."T"."$offset_sunset\nSUMMARY:Sunset : ".substr($real_sunset,0,2).":".substr($real_sunset,2,2)." PM\nDTEND:$set_day"."T"."$offset_sunset
-DTSTART:$set_day"."T"."$offset_sunset\nSUMMARY:Sunset : ".substr($real_sunset,0,2).":".substr($real_sunset,2,2)." PM\nDTEND:$set_day"."T"."$offset_sunset			
+			echo "UID:$set_day"."T"."$offset_sunset
+SUMMARY:Sunset : ".substr($real_sunset,0,2).":".substr($real_sunset,2,2)." PM
+DTSTAMP:$set_day"."T"."$offset_sunset
+DTSTART:$set_day"."T"."$offset_sunset
+DTEND:$set_day"."T"."$offset_sunset			
 DESCRIPTION:$description
 URL:http://pdxvr.com/ical_sun.php
 END:VEVENT\n";
 			} else {
-			echo "UID:$set_day"."T"."$offset_sunset\nSUMMARY:Sunset : ".substr($real_sunset,0,2).":".substr($real_sunset,2,2)."\nDTEND:$set_day"."T"."$offset_sunset
-DTSTAMP:$set_day"."T"."$offset_sunset\nSUMMARY:Sunset : ".substr($real_sunset,0,2).":".substr($real_sunset,2,2)."\nDTEND:$set_day"."T"."$offset_sunset
-DTSTART:$set_day"."T"."$offset_sunset\nSUMMARY:Sunset : ".substr($real_sunset,0,2).":".substr($real_sunset,2,2)."\nDTEND:$set_day"."T"."$offset_sunset
+			echo "UID:$set_day"."T"."$offset_sunset
+SUMMARY:Sunset : ".substr($real_sunset,0,2).":".substr($real_sunset,2,2)."
+DTSTAMP:$set_day"."T"."$offset_sunset
+DTSTART:$set_day"."T"."$offset_sunset
+DTEND:$set_day"."T"."$offset_sunset
 DESCRIPTION:$description
 URL:http://pdxvr.com/ical_sun.php
 END:VEVENT\n";
@@ -330,8 +337,8 @@ function getLocation() {
 function showPosition(position) {
 //  myapp.x.innerHTML = "Latitude: " + position.coords.latitude +
 //    "<br>Longitude: " + position.coords.longitude;
-  myapp.lat.value = Math.round(position.coords.latitude * 1000) / 1000;
-  myapp.lon.value = Math.round(position.coords.longitude * 1000) / 1000;
+  myapp.lat.value = Math.round(position.coords.latitude * 100) / 100;
+  myapp.lon.value = Math.round(position.coords.longitude * 100) / 100;
   
 }
 
@@ -347,17 +354,16 @@ echo "
 
 <h2>NOTES</h2>
 <span style=\"line-height: 22px;\">
-I threw this together for very small personal use project in late 2009. I updated it for different versions of PHP, then in 2022 to add 12 hour time, accessibility fixes, location services, and updated the sunrise / sunset calculations. I only ever add to it and have never cleaned up the code - you get what you pay for.
+I wrote this in late 2009, updated it for different versions of PHP, then in 2022 to add 12 hour time, accessibility fixes, location services, and updated the sunrise / sunset calculations.  I do NOT do anything with your location.  It's only passed back to this form where it's used to calculate the events. 
 <br><br>
 DAYLIGHT SAVING TIME:<br>
 PHP appears to have DST built in but you must select the correct time zone. America/Phoenix, won't give you DST because Arizona doesn't do DST.
 <br><br>
-<strong>problems or questions</strong> - <a href=\"https://finch.red/contact\" target=\"_blank\">contact me</a> or <a href=\"https://paypal.me/crowdotblack?country.x=US&locale.x=en_US\" target=\"_blank\">buy me a coffee</a>
+<strong>Problems or questions</strong> - <a href=\"https://finch.red/contact\" target=\"_blank\">contact me</a> or <a href=\"https://paypal.me/crowdotblack?country.x=US&locale.x=en_US\" target=\"_blank\">buy me a coffee</a>
+<br><br>
+<a href=\"https://github.com/pdxvr/ical_sunrise_sunset/blob/main/source\" target=\"_blank\">Source code</a>
 </span><br>
 </body>
 </html>";
-// print_r(timezone_identifiers_list());
-// include("../inc/ga.php");
 }
-
 ?>
